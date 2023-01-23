@@ -16,31 +16,19 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
 const cors_1 = __importDefault(require("cors"));
-// Import the functions you need from the SDKs you need
-const app_1 = require("firebase/app");
-const firestore_1 = require("firebase/firestore");
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "*",
-    authDomain: "*",
-    projectId: "*",
-    storageBucket: "*",
-    messagingSenderId: "*",
-    appId: "*",
-};
-// Initialize Firebase
-const firebaseApp = (0, app_1.initializeApp)(firebaseConfig);
-const db = (0, firestore_1.getFirestore)(firebaseApp);
+const app_1 = require("firebase-admin/app");
+const firestore_1 = require("firebase-admin/firestore");
+(0, app_1.initializeApp)({
+    credential: (0, app_1.applicationDefault)(),
+    databaseURL: "https://todo-nodejs-db808.firebaseio.com",
+});
+const db = (0, firestore_1.getFirestore)();
 // get todos
 function getTodoItems() {
     return __awaiter(this, void 0, void 0, function* () {
-        const docRef = (0, firestore_1.collection)(db, "todos");
-        const q = (0, firestore_1.query)(docRef);
-        const querySnapshot = yield (0, firestore_1.getDocs)(q);
+        const snapshot = yield db.collection("todos").get();
         let items = [];
-        querySnapshot.forEach((doc) => {
+        snapshot.forEach((doc) => {
             items.push(doc.data());
         });
         return items;
